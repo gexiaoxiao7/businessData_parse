@@ -1,2 +1,6 @@
 data_preprocess
 model
+.idea
+__pycache__
+local_config.py
+unsolved_data.csv

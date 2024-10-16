@@ -23,6 +23,8 @@ columns = ['eid', 'change_date', 'before_investor', 'before_amount', 'before_uni
            'after_investor', 'after_amount', 'after_unit', 'after_percent']
 output_data = pd.DataFrame(columns=columns)
 
+unsolved_data = pd.DataFrame(columns = data.columns)
+
 def load_model(model_path):
     tokenizer = BertTokenizer.from_pretrained(model_path)
     model = torch.load(os.path.join(model_path, "ner_model.ckpt"), map_location="cpu")
@@ -45,6 +47,21 @@ def parse_one_row(row, model, tokenizer, label2id):
     before_fomat = get_entities_result(before_context, tokenizer, model, label2id) if before_context else [{'name': '', 'should_capi': '', 'unit': '', 'currency' : '', 'stock_percent': ''}]
     after_context = row['after_content']
     after_fomat = get_entities_result(after_context, tokenizer, model, label2id) if after_context else [{'name': '', 'should_capi': '', 'unit': '', 'currency' : '', 'stock_percent': ''}]
+
+    if before_fomat == [] or after_fomat == []:
+        unsolved_data.loc[len(unsolved_data)] = row
+        return
+
+    for item in before_fomat:
+        if '[UNK]' in item['name']:
+            unsolved_data.loc[len(unsolved_data)] = row
+            return
+
+    for item in after_fomat:
+        if '[UNK]' in item['name']:
+            unsolved_data.loc[len(unsolved_data)] = row
+            return
+
     for befores in before_fomat:
         before_name = befores['name']
         t,  after_fomat= find_util(before_name, after_fomat)
@@ -66,8 +83,9 @@ def main():
 
         # if index == 500:
         #     break
-    output_data.to_sql(target_table_name, target_engine, index=False, if_exists='append')
-    print('数据迁移完成')
+    unsolved_data.to_csv('unsolved_data.csv', index=False)
+    output_data.to_sql(target_table_name, target_engine, index=False, if_exists='replace')
+    print('=============================数据迁移完成================================')
 
     # parse_one_row(data.iloc[77], model, tokenizer, label2id)
 

@@ -1,16 +1,16 @@
 source_params = {
-    'host': '目标数据库地址',
-    'user': '',
-    'password': '',
-    'db': '数据库名',
+    'host': 'localhost',
+    'user': 'marshall',
+    'password': '123456',
+    'db': 'business_data',
     'port': 3306  # 默认MySQL端口
 }
 
 target_params = {
-    'host': '解析表所在的数据库地址',
-    'user': '',
-    'password': '',
-    'db': '数据库名',
+    'host': 'localhost',
+    'user': 'marshall',
+    'password': '123456',
+    'db': 'business_data',
     'port': 3306  # 默认MySQL端口
 }
 
