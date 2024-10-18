@@ -4,3 +4,4 @@ model
 __pycache__
 local_config.py
 unsolved_data.csv
+error_data.csv
