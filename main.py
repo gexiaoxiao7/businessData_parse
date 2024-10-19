@@ -9,7 +9,7 @@ from tqdm import *
 
 from utils import load_pkl, output_one_sentence
 from sqlalchemy import create_engine
-from local_config import source_params, target_params, source_table_name, target_table_name
+from config import source_params, target_params, source_table_name, target_table_name
 from torch_ner.ner_predict import get_entities_result
 
 # 创建数据库连接引擎

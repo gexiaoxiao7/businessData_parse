@@ -1,7 +1,7 @@
 import pickle
 import json
 from openai import OpenAI
-from local_config import api_key
+from config import api_key
 
 client = OpenAI(
     api_key= api_key,
