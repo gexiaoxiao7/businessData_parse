@@ -83,7 +83,9 @@ def main():
 
         # if index == 100:
         #     break
-
+    output_data.to_sql(target_table_name, target_engine, if_exists='replace', index=False)
+    # 清空 output_data
+    output_data.drop(output_data.index, inplace=True)
     print("\n============================处理未识别数据===============================")
     erro_data = pd.DataFrame(columns=columns)
     for index, row in tqdm(unsolved_data.iterrows(),total=len(unsolved_data)):
@@ -111,7 +113,7 @@ def main():
                 output_data.loc[len(output_data)] = [eid, change_date, '', '', '', '',
                                                 t['name'], t['should_capi'], t['unit'] + t['currency'], t['stock_percent']]
 
-    output_data.to_sql(target_table_name, target_engine, if_exists='replace', index=False)
+    output_data.to_sql(target_table_name, target_engine, if_exists='append', index=False)
     erro_data.to_csv('erro_data.csv', index=False)
     print(f"\n 未识别的数据有{len(erro_data)}条，已保存到erro_data.csv")
     print('=============================数据迁移完成================================')
