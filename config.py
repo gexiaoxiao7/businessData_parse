@@ -27,6 +27,6 @@ model = 'database2csv'
 
 # wanted_eid: 如果为空则默认迁移整个数据表
 wanted_eid = [
-    '744dfcc1-0e8c-4f04-9586-e6cab4051864',
-    '000d4284-7cfb-43ba-96b5-df9028eec864'
+    'aaa',
+    'bbb'
 ]
