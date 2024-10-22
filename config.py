@@ -20,3 +20,13 @@ target_table_name = 't_changerec_target_format'
 
 # 设置deepseek的api_key
 api_key = ""
+
+# model: "database2database" or "database2csv"
+# 数据库到数据库迁移或者数据库到csv文件迁移
+model = 'database2csv'
+
+# wanted_eid: 如果为空则默认迁移整个数据表
+wanted_eid = [
+    '744dfcc1-0e8c-4f04-9586-e6cab4051864',
+    '000d4284-7cfb-43ba-96b5-df9028eec864'
+]

@@ -9,14 +9,14 @@ from tqdm import *
 
 from utils import load_pkl, output_one_sentence
 from sqlalchemy import create_engine
-from config import source_params, target_params, source_table_name, target_table_name
+from config import source_params, target_params, source_table_name, target_table_name, model, wanted_eid
 from torch_ner.ner_predict import get_entities_result
 
 # 创建数据库连接引擎
 source_engine = create_engine(f'mysql+pymysql://{source_params["user"]}:{source_params["password"]}@{source_params["host"]}:{source_params["port"]}/{source_params["db"]}')
 target_engine = create_engine(f'mysql+pymysql://{target_params["user"]}:{target_params["password"]}@{target_params["host"]}:{target_params["port"]}/{target_params["db"]}')
 
-query = f"SELECT * FROM `{source_table_name}` where type = '股东股权变更'"
+query = f"SELECT * FROM `{source_table_name}` where type = '股东股权变更'" if not wanted_eid else f"SELECT * FROM `{source_table_name}` where eid in {tuple(wanted_eid)} and type = '股东股权变更'"
 data = pd.read_sql(query, source_engine)
 
 columns = ['eid', 'change_date', 'before_investor', 'before_amount', 'before_unit', 'before_percent',
@@ -83,9 +83,10 @@ def main():
 
         # if index == 100:
         #     break
-    output_data.to_sql(target_table_name, target_engine, if_exists='replace', index=False)
-    # 清空 output_data
-    output_data.drop(output_data.index, inplace=True)
+    if model == 'database2database':
+        output_data.to_sql(target_table_name, target_engine, if_exists='replace', index=False)
+        # 清空 output_data
+        output_data.drop(output_data.index, inplace=True)
     print("\n============================处理未识别数据===============================")
     erro_data = pd.DataFrame(columns=columns)
     for index, row in tqdm(unsolved_data.iterrows(),total=len(unsolved_data)):
@@ -112,8 +113,10 @@ def main():
             for t in after_fomat:
                 output_data.loc[len(output_data)] = [eid, change_date, '', '', '', '',
                                                 t['name'], t['should_capi'], t['unit'] + t['currency'], t['stock_percent']]
-
-    output_data.to_sql(target_table_name, target_engine, if_exists='append', index=False)
+    if model == 'database2csv':
+        output_data.to_csv('output_data.csv', index=False)
+    else:
+        output_data.to_sql(target_table_name, target_engine, if_exists='append', index=False)
     erro_data.to_csv('erro_data.csv', index=False)
     print(f"\n 未识别的数据有{len(erro_data)}条，已保存到erro_data.csv")
     print('=============================数据迁移完成================================')
